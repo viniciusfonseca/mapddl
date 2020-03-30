@@ -15,12 +15,11 @@
     "test": "mocha"
   },
   "dependencies": {
-    "knex": "^0.20.13",
     "pluralize": "^8.0.0",
-    "sql-ddl-to-json-schema": "^4.0.1",
-    "sqlite3": "^4.1.1"
+    "sql-ddl-to-json-schema": "^4.0.1"
   },
   "peerDependencies": {
+    "sqlite3": "^4.1.1",
     "knex": "^0.20.13",
     "mysql": "^2.18.1"
   }
