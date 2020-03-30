@@ -88,7 +88,7 @@ If you use Javascript instead of Typescript, you can use JSDoc to type the datab
 
 ```js
 /** @type {import('mapddl').Database<import('./mapddl-types.d.ts').ModelDictionary>} */
-const db = new Database<ModelDictionary>(sqlSchema, relationships, {
+const db = new Database(sqlSchema, relationships, {
     schemaDialect: 'mysql',
     databaseDialect: 'mysql',
     connectionParams: {
