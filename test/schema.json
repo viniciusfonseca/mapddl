@@ -1,0 +1,374 @@
+[
+  {
+    "name": "customers",
+    "columns": [
+      {
+        "name": "id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false,
+          "autoincrement": true
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "email",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "phone",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "role",
+        "type": {
+          "datatype": "char",
+          "length": 10
+        },
+        "options": {
+          "nullable": true
+        }
+      }
+    ],
+    "primaryKey": {
+      "columns": [
+        {
+          "column": "id"
+        }
+      ]
+    }
+  },
+  {
+    "name": "addresses",
+    "columns": [
+      {
+        "name": "id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false,
+          "autoincrement": true
+        }
+      },
+      {
+        "name": "street",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "number",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "city",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "zip_code",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "customer_id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      }
+    ],
+    "primaryKey": {
+      "columns": [
+        {
+          "column": "id"
+        }
+      ]
+    },
+    "foreignKeys": [
+      {
+        "columns": [
+          {
+            "column": "customer_id"
+          }
+        ],
+        "reference": {
+          "table": "customers",
+          "columns": [
+            {
+              "column": "id"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "products",
+    "columns": [
+      {
+        "name": "id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false,
+          "autoincrement": true
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "datatype": "varchar",
+          "length": 255
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "price",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "currency",
+        "type": {
+          "datatype": "char",
+          "length": 5
+        },
+        "options": {
+          "nullable": true
+        }
+      }
+    ]
+  },
+  {
+    "name": "carts",
+    "columns": [
+      {
+        "name": "id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false,
+          "autoincrement": true
+        }
+      },
+      {
+        "name": "customer_id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          {
+            "column": "customer_id"
+          }
+        ],
+        "reference": {
+          "table": "customers",
+          "columns": [
+            {
+              "column": "id"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "carts_products",
+    "columns": [
+      {
+        "name": "cart_id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      },
+      {
+        "name": "product_id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      },
+      {
+        "name": "quantity",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          {
+            "column": "cart_id"
+          }
+        ],
+        "reference": {
+          "table": "carts",
+          "columns": [ 
+            {
+              "column": "id"
+            }
+          ]
+        }
+      },
+      {
+        "columns": [
+          {
+            "column": "product_id"
+          }
+        ],
+        "reference": {
+          "table": "products",
+          "columns": [
+            {
+              "column": "id"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "orders",
+    "columns": [
+      {
+        "name": "id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false,
+          "autoincrement": true
+        }
+      },
+      {
+        "name": "cart_id",
+        "type": {
+          "datatype": "int",
+          "width": 4
+        },
+        "options": {
+          "nullable": false
+        }
+      },
+      {
+        "name": "status",
+        "type": {
+          "datatype": "varchar",
+          "length": 30
+        },
+        "options": {
+          "nullable": true
+        }
+      },
+      {
+        "name": "description",
+        "type": {
+          "datatype": "varchar",
+          "length": 30
+        },
+        "options": {
+          "nullable": true
+        }
+      }
+    ],
+    "foreignKeys": [
+      {
+        "columns": [
+          {
+            "column": "cart_id"
+          }
+        ],
+        "reference": {
+          "table": "carts",
+          "columns": [
+            {
+              "column": "id"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
