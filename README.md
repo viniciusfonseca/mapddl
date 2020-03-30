@@ -116,3 +116,10 @@ const address = await db.models.addresses.insert({
 ```
 
 This is still a project under active development. If you want to contribute, send a PR or an email to vfonseca1618@gmail.com
+
+
+## Roadmap
+
+- [] Implement the remaining relationship functions
+- [] Write tests for all `Model` class functions
+- [] Publish to npm 
