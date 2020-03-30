@@ -29,7 +29,7 @@ const sqlSchema = sql`
 `
 
 const relationships = [
-    ["customers", "1..1", "addresses"]
+    ["customers", "1..1", "addresses", "customer_id"]
 ]
 
 generateTypes(
