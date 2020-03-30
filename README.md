@@ -1,6 +1,6 @@
 # MapDDL ORM
 
-MapDDL is an ORM that tries to mimic your current database's schema. Instead of writing up abstractions like models, all you need to do is to provide your database schema and its relationships and MapDDL will generate the models and its relationship methods for you. It is built on top of Knex.js and 
+MapDDL is an ORM that tries to mimic your current database's schema. Instead of writing up abstractions like models, all you need to do is to provide your database schema and its relationships and MapDDL will generate the models and its relationship methods for you. It is built on top of Knex.js and sql-ddl-to-json-schema.
 
 First you need to run the `generateTypes` function to generate the type definitions of your model from your SQL schema:
 
