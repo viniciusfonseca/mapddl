@@ -120,6 +120,6 @@ This is still a project under active development. If you want to contribute, sen
 
 ## Roadmap
 
-- [] Implement the remaining relationship functions
-- [] Write tests for all `Model` class functions
-- [] Publish to npm 
+- [x] Implement the remaining relationship functions
+- [ ] Write tests for all `Model` class functions
+- [ ] Publish to npm 
