@@ -1,14 +1,14 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { generateTypes, Database } from '..'
-import { ModelDictionary } from './mapddl-types'
+import { generateTypes, Database } from '../src'
+// import { ModelDictionary } from './mapddl-types'
 
 const sqlSchema = fs.readFileSync(path.join(__dirname, 'schema.sql')).toString()
 const relationships = JSON.parse(fs.readFileSync(path.join(__dirname, 'relationships.json')).toString())
 
 describe('mapddl', () => {
 
-    it('generates types', () => {
+    it.only('generates types', () => {
         generateTypes(
             sqlSchema,
             relationships,
@@ -19,42 +19,44 @@ describe('mapddl', () => {
             {})
     })
 
-    it.only('creates the models', async () => {
+    it('creates the models', async () => {
 
-        const db = new Database<ModelDictionary>(sqlSchema, relationships, {
-            schemaDialect: 'mysql',
-            databaseDialect: 'sqlite3',
-            connectionParams: ':memory:',
-            knexParams: { useNullAsDefault: true }
-        })
+        // const db = new Database<ModelDictionary>(sqlSchema, relationships, {
+        //     schemaDialect: 'mysql',
+        //     databaseDialect: 'sqlite3',
+        //     connectionParams: ':memory:',
+        //     knexParams: { useNullAsDefault: true }
+        // })
 
-        await Promise.all(
-            sqlSchema
-            .replace(/int NOT NULL AUTO_INCREMENT/g, "INTEGER PRIMARY KEY AUTOINCREMENT")
-            .replace(/PRIMARY KEY\(id\)(,)?/g, (_, m) => !m ? "_ char(1)" : "")
-            .match(/[^;]+/gm)
-            .map(statement => db.connection.raw(statement))
-        )
+        // await Promise.all(
+        //     sqlSchema
+        //     .replace(/int NOT NULL AUTO_INCREMENT/g, "INTEGER PRIMARY KEY AUTOINCREMENT")
+        //     .replace(/PRIMARY KEY\(id\)(,)?/g, (_, m) => !m ? "_ char(1)" : "")
+        //     .match(/[^;]+/gm)
+        //     .map(statement => db.connection.raw(statement))
+        // )
 
-        const customer = await db.models.customers.insert({
-            email: 'vfonseca@example.com',
-            name: 'Vinicius',
-            phone: '111111111'
-        })
+        // const customer = await db.models.customers.insert({
+        //     email: 'vfonseca@example.com',
+        //     name: 'Vinicius',
+        //     phone: '111111111'
+        // })
 
-        await db.models.addresses.insert({
-            customer_id: customer.id,
-            street: 'foo_street'
-        })
+        // await db.models.addresses.insert({
+        //     customer_id: customer.id,
+        //     street: 'foo_street'
+        // })
 
-        const cart = await customer.addCart({})
+        // const cart = await customer.addCart({})
 
-        const product = await db.models.products.insert({
-            name: 'xpto',
-            price: 11111
-        })
+        // const product = await db.models.products.insert({
+        //     name: 'xpto',
+        //     price: 11111
+        // })
 
-        await cart.addProduct(product, { quantity: 10 })
+        // await cart.addProduct(product, { quantity: 10 })
+
+        // await cart.updateProduct()
 
         // return null
         // customer.addCart({

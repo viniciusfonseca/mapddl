@@ -32,13 +32,17 @@ export class Database<ModelDictionary = any> {
             this.connection = connection
         }
         this.models = {} as ModelDictionary
+        const modelOptions = {
+            connection,
+            relationships,
+            modelDictionary: this.models
+        }
 
         for (const table of schema) {
-            this.models[table.name] = new Model(table, {
-                connection,
-                relationships,
-                modelDictionary: this.models
-            })
+            this.models[table.name] = new Model(table, modelOptions)
+        }
+        for (const model of Object.values(this.models)) {
+            model.setupRelationshipMethods(modelOptions)
         }
 
         this.schema = schema

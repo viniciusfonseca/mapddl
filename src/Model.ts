@@ -24,9 +24,17 @@ export class Model<T = any> {
         this.table = table
         this.connection = options.connection
         this.relationshipFns = []
+    }
 
-        const getTablePkName = tableName =>
-            (options.modelDictionary[tableName].table.primaryKey.columns[0] || []).column || 'id'
+    setupRelationshipMethods(options: ModelOptions) {
+
+        const table = this.table
+
+        const getTablePkName = tableName => {
+            const { primaryKey } = options.modelDictionary[tableName].table
+            if (!primaryKey) { return null }
+            return (primaryKey.columns[0] || []).column || 'id'
+        }
 
         const pkName = getTablePkName(table.name)
 
@@ -147,7 +155,21 @@ export class Model<T = any> {
                             })
                         },
                         relation,
-                        typeDescription: `add${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: Partial<${capitalize(table2Name)}>, relationshipParams?: Partial<${joinSnakeCase(capitalize(relationshipTable))}>): Promise<${capitalize(table2Name)}>`
+                        typeDescription: `add${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}, relationshipParams?: Partial<${joinSnakeCase(capitalize(relationshipTable))}>): Promise<${capitalize(table2Name)}>`
+                    })
+                    this.relationshipFns.push({
+                        methodName: `update${capitalize(toSingular(table2Name))}`,
+                        targetTableName: table2Name,
+                        func(entity: any, relationshipTableFields: any) {
+                            return options.connection(relationshipTable)
+                                .where({
+                                    [table1Fk]: this[pkName],
+                                    [table2Fk]: entity[table2PkName]
+                                })
+                                .update(relationshipTableFields)
+                        },
+                        relation,
+                        typeDescription: `update${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}, relationshipParams?: Partial<${joinSnakeCase(capitalize(relationshipTable))}>): Promise<any>`
                     })
                     this.relationshipFns.push({
                         methodName: `remove${capitalize(toSingular(table2Name))}`,
@@ -158,6 +180,7 @@ export class Model<T = any> {
                                     [table1Fk]: this[pkName],
                                     [table2Fk]: entity[table2PkName]
                                 })
+                                .delete()
                         },
                         relation,
                         typeDescription: `remove${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}): Promise<any>`

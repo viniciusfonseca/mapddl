@@ -33,7 +33,8 @@ export declare interface Carts {
     id: number
     customer_id: number
     getProducts(): Promise<Products[]>
-    addProduct(product: Partial<Products>, relationshipParams: Partial<CartsProducts>): Promise<Products>
+    addProduct(product: Partial<Products>, relationshipParams?: Partial<CartsProducts>): Promise<Products>
+    updateProduct(product: Partial<Products>, relationshipParams?: Partial<CartsProducts>): Promise<any>
     removeProduct(product: Products): Promise<any>
     getOrder(): Promise<Orders>
     setOrder(order: Orders): Promise<any>
