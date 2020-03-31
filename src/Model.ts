@@ -28,21 +28,29 @@ export class Model<T = any> {
         const getTablePkName = tableName =>
             (options.modelDictionary[tableName].table.primaryKey.columns[0] || []).column || 'id'
 
+        const pkName = getTablePkName(table.name)
+
         for (const [
             table1Name,
             relation,
             table2Name,
             ...args
         ] of options.relationships) {
-            if (table1Name !== this.table.name) { continue }
+            if (table1Name !== table.name) { continue }
+            const table2Extend = options.modelDictionary[table2Name].extendEntityMethods
+            const table2PkName = getTablePkName(table2Name)
             switch (relation) {
-                case '1..1':
+                case '1..1': {
+                    const [ table2Fk ] = args
                     this.relationshipFns.push({
                         methodName: `get${capitalize(toSingular(table2Name))}`,
                         targetTableName: table2Name,
                         func() {
-                            // TODO
-
+                            return options.connection(table2Name)
+                                .select()
+                                .where({ [table2Fk]: this[pkName] })
+                                .first()
+                                .then(entity => table2Extend(entity))
                         },
                         relation,
                         typeDescription: `get${capitalize(toSingular(table2Name))}(): Promise<${capitalize(table2Name)}>`
@@ -50,26 +58,28 @@ export class Model<T = any> {
                     this.relationshipFns.push({
                         methodName: `set${capitalize(toSingular(table2Name))}`,
                         targetTableName: table2Name,
-                        func() {
-                            // TODO
-
+                        func(entity) {
+                            return options.connection(table2Name)
+                                .where({ [table2PkName]: entity[table2PkName] })
+                                .update({ [table2Fk]: this[pkName] })
                         },
                         relation,
                         typeDescription: `set${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}): Promise<any>`
                     })
                     break
-                case '1..n':
+                }
+                case '1..n': {
+                    const [ table2Fk ] = args
                     this.relationshipFns.push({
                         methodName: `get${capitalize(table2Name)}`,
                         targetTableName: table2Name,
                         func() {
-                            // TODO
                             const query = options.connection(table2Name)
                                 .select()
-                                .where({  })
+                                .where({ [table2Fk]: this[pkName] })
                                 .then(entities =>
                                     entities.map(entity =>
-                                        options.modelDictionary[table2Name].extendEntityMethods(entity)
+                                        table2Extend(entity)
                                     )
                                 )
                             return query
@@ -84,18 +94,15 @@ export class Model<T = any> {
                             const [ fkName ] = args
                             const pkName = (table.primaryKey.columns[0] || {}).column || 'id'
                             entity = { ...entity, [fkName]: this[pkName] }
-                            const table2PkName = getTablePkName(table2Name)
-                            const query = options.connection(table2Name)
+                            return options.connection(table2Name)
                                 .insert(entity, [table2PkName])
-                            return query.then(([ pkVal ]) =>
-                                options.connection(table2Name)
-                                    .select()
-                                    .where({ [table2PkName]: pkVal })
-                                    .first()
-                            )
-                            .then(entity =>
-                                options.modelDictionary[table2Name].extendEntityMethods(entity)
-                            )
+                                .then(([ pkVal ]) =>
+                                    options.connection(table2Name)
+                                        .select()
+                                        .where({ [table2PkName]: pkVal })
+                                        .first()
+                                )
+                                .then(entity => table2Extend(entity))
                         },
                         relation,
                         typeDescription: `add${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: Partial<${capitalize(table2Name)}>): Promise<${capitalize(table2Name)}>`
@@ -103,22 +110,28 @@ export class Model<T = any> {
                     this.relationshipFns.push({
                         methodName: `remove${capitalize(toSingular(table2Name))}`,
                         targetTableName: table2Name,
-                        func() {
-                            // TODO
-
+                        func(entity) {
+                            return options.connection(table2Name)
+                                .where({ [table2PkName]: entity[table2PkName] })
+                                .delete()
                         },
                         relation,
                         typeDescription: `remove${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}): Promise<any>`
                     })
                     break
+                }
                 case 'n..n': {
                     const [ relationshipTable, table1Fk, table2Fk ] = args
                     this.relationshipFns.push({
                         methodName: `get${capitalize(table2Name)}`,
                         targetTableName: table2Name,
                         func() {
-                            // TODO
-
+                            return options.connection(table2Name)
+                                .select()
+                                .innerJoin(table.name, `${table.name}.${pkName}`, `${relationshipTable}.${table1Fk}`)
+                                .innerJoin(relationshipTable, `${relationshipTable}.${table2Fk}`, `${table2Name}.${table2PkName}`)
+                                .where(`${table.name}.${pkName}`, this[pkName])
+                                .then(entities => entities.map(entity => table2Extend(entity)))
                         },
                         relation,
                         typeDescription: `get${capitalize(table2Name)}(): Promise<${capitalize(table2Name)}[]>`
@@ -127,12 +140,6 @@ export class Model<T = any> {
                         methodName: `add${capitalize(toSingular(table2Name))}`,
                         targetTableName: table2Name,
                         func(entity: any, relationshipTableFields: any) {
-
-                            const pkName = (table.primaryKey.columns[0] || {}).column || 'id'
-                            const table2PkName = getTablePkName(table2Name)
-
-                            console.log({ pkName, table2PkName, this: this, entity })
-
                             return options.connection(relationshipTable).insert({
                                 [table1Fk]: this[pkName],
                                 [table2Fk]: entity[table2PkName],
@@ -140,14 +147,17 @@ export class Model<T = any> {
                             })
                         },
                         relation,
-                        typeDescription: `add${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: Partial<${capitalize(table2Name)}>, relationshipParams: Partial<${joinSnakeCase(capitalize(relationshipTable))}>): Promise<${capitalize(table2Name)}>`
+                        typeDescription: `add${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: Partial<${capitalize(table2Name)}>, relationshipParams?: Partial<${joinSnakeCase(capitalize(relationshipTable))}>): Promise<${capitalize(table2Name)}>`
                     })
                     this.relationshipFns.push({
                         methodName: `remove${capitalize(toSingular(table2Name))}`,
                         targetTableName: table2Name,
-                        func() {
-                            // TODO
-
+                        func(entity) {
+                            return options.connection(relationshipTable)
+                                .where({
+                                    [table1Fk]: this[pkName],
+                                    [table2Fk]: entity[table2PkName]
+                                })
                         },
                         relation,
                         typeDescription: `remove${capitalize(toSingular(table2Name))}(${toSingular(table2Name)}: ${capitalize(table2Name)}): Promise<any>`
@@ -193,38 +203,36 @@ export class Model<T = any> {
 
     getByPk(id: number) : Promise<T> {
         const pkColKey = this.getPrimaryKeyColKey()
-        const query = this.createQuery()
+        return this.createQuery()
             .select()
             .where({ [pkColKey]: id })
             .first()
-        return query.then(entity => this.extendEntityMethods(entity))
+            .then(entity => this.extendEntityMethods(entity))
     }
 
     insert(values: Partial<T>) : Promise<T> {
         const pkColKey = this.getPrimaryKeyColKey()
-        const query = this.createQuery()
+        return this.createQuery()
             .insert(values, [pkColKey])
-        return query.then(([pkVal]) =>
-            this.createQuery()
-                .select()
-                .where({ [pkColKey]: pkVal })
-                .first()
-        ).then(entity => this.extendEntityMethods(entity))
+            .then(([pkVal]) =>
+                this.createQuery()
+                    .select()
+                    .where({ [pkColKey]: pkVal })
+                    .first()
+            ).then(entity => this.extendEntityMethods(entity))
     }
 
     updateById(id: number, values: Partial<T>) : Promise<any> {
         const pkColKey = this.getPrimaryKeyColKey()
-        const query = this.createQuery()
+        return this.createQuery()
             .where({ [pkColKey]: id })
             .update(values)
-        return query
     }
 
     deleteById(id: number) : Promise<any> {
         const pkColKey = this.getPrimaryKeyColKey()
-        const query = this.createQuery()
+        return this.createQuery()
             .where({ [pkColKey]: id })
             .delete()
-        return query
     }
 }
