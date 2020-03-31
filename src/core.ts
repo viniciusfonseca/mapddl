@@ -1,5 +1,5 @@
 export function capitalize(str: string) {
-    const res = [...str]
+    const res = str.split("")
     res[0] = res[0].toUpperCase()
     return res.join("")
 }

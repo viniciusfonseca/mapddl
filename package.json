@@ -1,7 +1,7 @@
 {
   "name": "mapddl",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^7.0.2",
@@ -12,7 +12,8 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "tsc --build tsconfig.json"
   },
   "dependencies": {
     "pluralize": "^8.0.0",

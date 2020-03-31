@@ -1,7 +1,6 @@
-import { Parser } from 'sql-ddl-to-json-schema'
 import * as fs from 'fs'
 import * as path from 'path'
-import { generateTypes, Database } from '../src'
+import { generateTypes, Database } from '..'
 import { ModelDictionary } from './mapddl-types'
 
 const sqlSchema = fs.readFileSync(path.join(__dirname, 'schema.sql')).toString()
