@@ -1,14 +1,13 @@
 import * as Knex from 'knex'
 import { Model } from "./Model";
 import { Parser, TableInterface } from "sql-ddl-to-json-schema";
-import { DatabaseOptions, SQLExecutionFunction, RelationshipDefinition } from "./@types";
+import { DatabaseOptions, RelationshipDefinition } from "./types";
 
 export class Database<ModelDictionary = any> {
 
     public schema: TableInterface[]
     public models: ModelDictionary
     public connection: Knex
-    public execSql: SQLExecutionFunction
 
     constructor(
         sqlSchema: string,

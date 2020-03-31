@@ -1,4 +1,4 @@
-import { ModelOptions, QueryOptions, SQLExecutionFunction } from "./@types";
+import { ModelOptions, QueryOptions } from "./types";
 import { TableInterface } from "sql-ddl-to-json-schema/typings";
 import * as Knex from 'knex'
 import { capitalize, joinSnakeCase } from "./core";

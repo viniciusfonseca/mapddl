@@ -1,4 +1,4 @@
-import { DatabaseOptions, RelationshipDefinition } from "./@types";
+import { DatabaseOptions, RelationshipDefinition } from "./types";
 import { Database } from "./Database";
 import * as fs from 'fs'
 import { capitalize, joinSnakeCase } from "./core";

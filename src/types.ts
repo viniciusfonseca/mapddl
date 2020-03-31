@@ -17,8 +17,6 @@ export declare interface DatabaseOptions {
     knexParams: any
 }
 
-export declare type SQLExecutionFunction = <T = any>(script: string) => Promise<T>
-
 export declare interface ModelOptions {
     connection: Knex
     relationships: RelationshipDefinition[]

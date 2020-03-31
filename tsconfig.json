@@ -3,9 +3,8 @@
         "moduleResolution": "node",
         "target": "ES2020",
         "module": "CommonJS",
-        "declaration": true,
-        "declarationDir": "dist/@types",
-        "outDir": "dist"
+        "outDir": "dist",
+        "declaration": true
     },
     "include": [
         "src/**/*"
