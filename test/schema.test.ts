@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { generateTypes, Database } from '../src'
+import * as child_process from 'child_process'
 // import { ModelDictionary } from './mapddl-types'
 
 const sqlSchema = fs.readFileSync(path.join(__dirname, 'schema.sql')).toString()
