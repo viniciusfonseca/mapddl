@@ -26,6 +26,18 @@ CREATE TABLE products (
     PRIMARY KEY(id)
 );
 
+CREATE TABLE categories (
+    id int NOT NULL AUTO_INCREMENT,
+    name varchar(255)
+);
+
+CREATE TABLE products_categories (
+    product_id int NOT NULL,
+    category_id int NOT NULL,
+    FOREIGN KEY(product_id) REFERENCES products(id),
+    FOREIGN KEY(category_id) REFERENCES categories(id)
+);
+
 CREATE TABLE carts (
     id int NOT NULL AUTO_INCREMENT,
     customer_id int NOT NULL,
