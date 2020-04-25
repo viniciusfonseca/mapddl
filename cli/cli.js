@@ -1,9 +1,11 @@
-import * as arg from 'arg'
-import * as fs from 'fs'
-import * as path from 'path'
-import { generateTypes } from './generateTypes'
+#!/usr/bin/env node
 
-function parseArgumentsIntoOptions(rawArgs: string[]) {
+const arg = require('arg')
+const fs = require('fs')
+const path = require('path')
+const generateTypes = require('./generateTypes')
+
+function parseArgumentsIntoOptions(rawArgs) {
 
     const args = arg({
         '--schema': String,
@@ -16,11 +18,11 @@ function parseArgumentsIntoOptions(rawArgs: string[]) {
     return {
         schema: args['--schema'] || 'schema.sql',
         relationships: args['--relationships'] || 'relationships.json',
-        out: args['--out']
+        out: args['--out'] || 'mapddl-dictionary.d.ts'
     }
 }
 
-export function cli(args: string[]) {
+function cli(args) {
 
     const options = parseArgumentsIntoOptions(args)
 
@@ -34,7 +36,7 @@ export function cli(args: string[]) {
         return process.exit(0)
     }
 
-    const data: any = {}
+    const data = {}
 
     try {
         data.schema = fs.readFileSync(path.join(process.cwd(), options.schema))
@@ -51,8 +53,12 @@ export function cli(args: string[]) {
         process.stderr.write(`Could not access relationships file: ${e.message}`)
     }
 
-    generateTypes(data.schema, data.relationships, {
+    generateTypes(data.schema.toString(), data.relationships, {
         mapDDLLibPath: 'mapddl',
         outputPath: path.join(process.cwd(), options.out)
     }, {})
 }
+
+cli(process.argv)
+
+module.exports = cli
