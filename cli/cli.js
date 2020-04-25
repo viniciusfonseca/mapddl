@@ -53,10 +53,19 @@ function cli(args) {
         process.stderr.write(`Could not access relationships file: ${e.message}`)
     }
 
-    generateTypes(data.schema.toString(), data.relationships, {
-        mapDDLLibPath: 'mapddl',
-        outputPath: path.join(process.cwd(), options.out)
-    }, {})
+    const outputPath = path.join(process.cwd(), options.out)
+
+    try {
+        generateTypes(data.schema.toString(), data.relationships, {
+            mapDDLLibPath: 'mapddl',
+            outputPath
+        }, {})
+        console.log(`Typings Dictionary File successfully generated: '${options.out}'`)
+    }
+    catch (e) {
+        console.log('Error generating typings dicitonary: ' + e.message)
+    }
+
 }
 
 cli(process.argv)

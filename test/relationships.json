@@ -1,7 +1,7 @@
 [
     ["customers", "1..1", "addresses", "customer_id"],
     ["carts", "n..n", "products", "carts_products", "cart_id", "product_id"],
-    ["categories", "n..n", "products", "categories_products", "category_id", "product_id"],
+    ["categories", "n..n", "products", "products_categories", "category_id", "product_id"],
     ["carts", "1..1", "orders", "cart_id"],
     ["customers", "1..n", "carts", "customer_id"]
 ]

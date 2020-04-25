@@ -45,7 +45,8 @@ export class Model<T = any> {
             ...args
         ] of options.relationships) {
             if (table1Name !== table.name) { continue }
-            const table2Extend = options.modelDictionary[table2Name].extendEntityMethods
+            const table2 = options.modelDictionary[table2Name]
+            const table2Extend = options.modelDictionary[table2Name].extendEntityMethods.bind(table2)
             const table2PkName = getTablePkName(table2Name)
             switch (relation) {
                 case '1..1': {
